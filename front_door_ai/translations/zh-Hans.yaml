@@ -1,0 +1,44 @@
+configuration:
+  camera_url:
+    name: 摄像头 MJPEG 地址
+    description: ESP32 的 /stream 地址；只由本 add-on 连接。
+  mqtt_host:
+    name: MQTT Broker 地址
+  mqtt_port:
+    name: MQTT 端口
+  mqtt_username:
+    name: MQTT 用户名
+  mqtt_password:
+    name: MQTT 密码
+  mqtt_tls:
+    name: 使用 MQTT TLS
+  mqtt_prefix:
+    name: MQTT Topic 前缀
+  device_id:
+    name: 设备标识
+  public_base_url:
+    name: ESP32 下载地址前缀
+    description: 例如 http://192.168.1.10:18080；使用 HA 主机的局域网地址。
+  todo_entity:
+    name: 出门提醒待办实体
+  tts_provider:
+    name: 语音合成服务
+    description: qwen 使用阿里千问，piper 使用本地音色。
+  qwen_api_key:
+    name: 阿里千问 API Key
+    description: 填写与接口地址匹配的 API Key，保存后重启应用。不会显示在管理页面或日志中。
+  qwen_tts_url:
+    name: 阿里千问语音接口
+    description: 默认使用千问平台北京接口；百炼用户可填写对应业务空间的官方 WSS inference 地址。
+  qwen_tts_model:
+    name: 阿里千问语音模型
+  qwen_tts_voice:
+    name: 阿里千问音色
+    description: 龙杰力豆对应 longjielidou_v3.1，适用于 qwen-audio-3.1-tts-flash。
+  piper_model:
+    name: Piper 本地音色路径
+    description: ONNX 文件路径，旁边必须有同名 .onnx.json 文件。
+  detector_model:
+    name: OpenVINO 人体检测模型
+network:
+  8080/tcp: 局域网视频与音频下载

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "deliver",
+  "type": "architecture",
+  "input": "D:\\Work\\smart_server\\docs\\diagrams\\front-door-ai.architecture.json",
+  "output": "D:\\Work\\smart_server\\docs\\diagrams\\front-door-ai.html",
+  "specification": {
+    "sha256": "490848676de7158741b86f400381d3ec7360cf1e2237ab62bc1c2ddebbf6f0c5",
+    "bytes": 6625
+  },
+  "artifact": {
+    "sha256": "89bd2e6b72707729771ccd7a524aa363dd694846ea1e1fee2a35aa7c32a2835d",
+    "bytes": 815124
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

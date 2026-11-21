@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Front Door AI · 系统架构",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1385,
+      620
+    ]
+  },
+  "components": [
+    {
+      "id": "esp-camera",
+      "type": "external",
+      "label": "ESP32 摄像头",
+      "sublabel": "MJPEG 图像源",
+      "tag": "设备侧 · 同一 ESP32",
+      "pos": [
+        40,
+        90
+      ],
+      "size": [
+        220,
+        86
+      ]
+    },
+    {
+      "id": "vision-pipeline",
+      "type": "backend",
+      "label": "采集与视觉检测",
+      "sublabel": "OpenVINO CPU → ByteTrack",
+      "tag": "最新帧槽 → 三区域迁移",
+      "pos": [
+        385,
+        90
+      ],
+      "size": [
+        220,
+        86
+      ]
+    },
+    {
+      "id": "mqtt-broker",
+      "type": "messagebus",
+      "label": "MQTT Broker",
+      "sublabel": "事件、命令与设备回执",
+      "tag": "外部服务 · 默认 Mosquitto",
+      "pos": [
+        730,
+        90
+      ],
+      "size": [
+        220,
+        86
+      ]
+    },
+    {
+      "id": "home-assistant",
+      "type": "external",
+      "label": "Home Assistant",
+      "sublabel": "自动化策略与 To-do",
+      "tag": "外部服务 · Core",
+      "pos": [
+        1075,
+        90
+      ],
+      "size": [
+        250,
+        86
+      ]
+    },
+    {
+      "id": "web-apps",
+      "type": "frontend",
+      "label": "媒体与管理应用",
+      "sublabel": "FastAPI · 共享 Runtime",
+      "tag": "媒体 :8080 · Ingress :8099",
+      "pos": [
+        40,
+        280
+      ],
+      "size": [
+        220,
+        86
+      ]
+    },
+    {
+      "id": "persistent-data",
+      "type": "database",
+      "label": "本地持久化 /data",
+      "sublabel": "SQLite · WAL / FULL",
+      "tag": "事件、播放事务、配置与媒体",
+      "pos": [
+        385,
+        280
+      ],
+      "size": [
+        220,
+        86
+      ]
+    },
+    {
+      "id": "reminder-manager",
+      "type": "backend",
+      "label": "提醒事务管理",
+      "sublabel": "ReminderManager + HAClient",
+      "tag": "同步 → 预缓存 → 播放 → 提交",
+      "pos": [
+        730,
+        280
+      ],
+      "size": [
+        220,
+        86
+      ]
+    },
+    {
+      "id": "piper-worker",
+      "type": "backend",
+      "label": "Piper 本地合成",
+      "sublabel": "可取消的独立子进程",
+      "tag": "版本化 WAV · 原子发布",
+      "pos": [
+        1075,
+        280
+      ],
+      "size": [
+        250,
+        86
+      ]
+    },
+    {
+      "id": "esp-audio",
+      "type": "external",
+      "label": "ESP32 缓存与播放",
+      "sublabel": "下载校验 · 去重 · finished",
+      "tag": "设备侧 · 固件需实现协议",
+      "pos": [
+        730,
+        470
+      ],
+      "size": [
+        220,
+        86
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "capture-mjpeg",
+      "from": "esp-camera",
+      "to": "vision-pipeline",
+      "label": "HTTP 单连接",
+      "variant": "emphasis"
+    },
+    {
+      "id": "publish-vision-event",
+      "from": "vision-pipeline",
+      "to": "mqtt-broker",
+      "label": "vision/event",
+      "variant": "emphasis"
+    },
+    {
+      "id": "automation-policy",
+      "from": "mqtt-broker",
+      "to": "home-assistant",
+      "label": "MQTT 事件 / 请求",
+      "variant": "emphasis"
+    },
+    {
+      "id": "shared-latest-frame",
+      "from": "vision-pipeline",
+      "to": "web-apps",
+      "label": "最新帧代理",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "persist-events",
+      "from": "vision-pipeline",
+      "to": "persistent-data",
+      "label": "事件先写库",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [
+        495,
+        260
+      ]
+    },
+    {
+      "id": "read-admin-state",
+      "from": "web-apps",
+      "to": "persistent-data",
+      "label": "查询 / 设置"
+    },
+    {
+      "id": "reminder-messaging",
+      "from": "reminder-manager",
+      "to": "mqtt-broker",
+      "label": "MQTT 命令 / 回执",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelAt": [
+        840,
+        205
+      ]
+    },
+    {
+      "id": "todo-websocket",
+      "from": "reminder-manager",
+      "to": "home-assistant",
+      "label": "WebSocket · To-do",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "persist-transactions",
+      "from": "reminder-manager",
+      "to": "persistent-data",
+      "label": "事务 / checkpoint"
+    },
+    {
+      "id": "synthesize-reminder",
+      "from": "reminder-manager",
+      "to": "piper-worker",
+      "label": "prepare(text)"
+    },
+    {
+      "id": "device-messaging",
+      "from": "mqtt-broker",
+      "to": "esp-audio",
+      "label": "MQTT 控制 / 状态",
+      "fromSide": "top",
+      "toSide": "right",
+      "via": [
+        [
+          840,
+          30
+        ],
+        [
+          1360,
+          30
+        ],
+        [
+          1360,
+          513
+        ]
+      ]
+    },
+    {
+      "id": "download-cached-audio",
+      "from": "web-apps",
+      "to": "esp-audio",
+      "label": "HTTP · /audio/{cache_id}.wav",
+      "fromSide": "bottom",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "运行边界",
+      "items": [
+        "HA OS / amd64 add-on：单 Python Runtime + 两个 Uvicorn 应用；MQTT 网络线程与 Piper 子进程独立执行。",
+        "媒体 18080 → 8080；管理入口仅接收 HA Ingress 网关。运行时推理与合成均在本地。"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "提醒闭环",
+      "items": [
+        "HA 自动化收到 EXIT 后发送 play_departure；视觉模块只发布事件。",
+        "ESP32 预下载指定版本；finished 先持久化再确认，重新核对 UID 与文本后完成 To-do。"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "阅读约定与可靠性",
+      "items": [
+        "箭头表示主要数据或主动调用方向；请求、响应与回执复用对应连接。摄像头与播放端为同一设备的两个角色。",
+        "QoS 1 允许重复；事件 / 命令 ID 去重。重启不重播，未完成提交按 checkpoint 恢复。"
+      ]
+    }
+  ]
+}

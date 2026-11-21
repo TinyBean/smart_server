@@ -1,0 +1,116 @@
+{
+  "diagram_type": "architecture",
+  "output": "D:\\Work\\smart_server\\docs\\diagrams\\front-door-ai.html",
+  "specification_sha256": "490848676de7158741b86f400381d3ec7360cf1e2237ab62bc1c2ddebbf6f0c5",
+  "specification_bytes": 6625,
+  "artifact_sha256": "89bd2e6b72707729771ccd7a524aa363dd694846ea1e1fee2a35aa7c32a2835d",
+  "artifact_bytes": 815124,
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  },
+  "browser_evidence": "passed",
+  "browser_receipt": "front-door-ai.visual-check.json",
+  "visual_review": "passed",
+  "correction_rounds": 1,
+  "visual_review_scope": [
+    "READ + Still",
+    "1440x900 light and dark screenshots",
+    "2048x1320 light and dark screenshots",
+    "Node/card fit, labels, routes, legend, desktop balance"
+  ],
+  "interaction_review": "not completed: in-app browser URL policy blocked local HTML",
+  "interaction_checks_not_exercised": [
+    "search",
+    "focus",
+    "passport closure",
+    "download export"
+  ],
+  "source_verification": "local file inspection and SHA-256; no Git revision",
+  "local_sources": [
+    {
+      "path": "front_door_ai/app/main.py",
+      "sha256": "3f80a5eec7685efaffe9ed0763689475a086403cab04f5f880768c35b1cad824",
+      "bytes": 1654
+    },
+    {
+      "path": "front_door_ai/app/runtime.py",
+      "sha256": "1948078c92a08b321d6bd2b0c1d78e9a2f9a8248f568659e31767518eb1bf10d",
+      "bytes": 7344
+    },
+    {
+      "path": "front_door_ai/app/camera.py",
+      "sha256": "d71e6aba7198cfba51fcb2188296fe5f4e71898eeb57921612f720916a925959",
+      "bytes": 5806
+    },
+    {
+      "path": "front_door_ai/app/vision.py",
+      "sha256": "46ccc069db09755a064b88de320b876b8ee1f8ab4eca0d2b629de13e53f88376",
+      "bytes": 10507
+    },
+    {
+      "path": "front_door_ai/app/mqtt.py",
+      "sha256": "69d4ba625e790573f6bbb40cedeb1c33a524b049f79444ded354fb64cbfe9117",
+      "bytes": 6834
+    },
+    {
+      "path": "front_door_ai/app/ha.py",
+      "sha256": "7737c88813dfca91b0336e820ea7473fdec257c79112b430949d033f8baa1774",
+      "bytes": 4277
+    },
+    {
+      "path": "front_door_ai/app/reminder.py",
+      "sha256": "0927e07764e39034935af5a2500871a5a897cfbad3a1e52aedb421ae7c639a9d",
+      "bytes": 12036
+    },
+    {
+      "path": "front_door_ai/app/tts.py",
+      "sha256": "96dffa28f364cbdf8e884d8eb98b2d757719d185a0a9ca1eb3a327a74cc2df34",
+      "bytes": 3437
+    },
+    {
+      "path": "front_door_ai/app/store.py",
+      "sha256": "11ede8145ac73a426dd235b3050469e10c1ad9dd3905b605912cf23e8fa62e02",
+      "bytes": 4690
+    },
+    {
+      "path": "front_door_ai/app/web.py",
+      "sha256": "96bcae6aa4f0e2d6d79e69bb0740b019297e730db5539d5cb77870c247cb49c1",
+      "bytes": 5834
+    },
+    {
+      "path": "front_door_ai/config.yaml",
+      "sha256": "23e1527a40aa59e6b7b55b7374859ef31e1d0dea3a23baf024025f04605ed6dd",
+      "bytes": 1214
+    },
+    {
+      "path": "front_door_ai/Dockerfile",
+      "sha256": "5a6b3afb38ef1d8b95e9b49a867fddf8480a467d5bdb4fdfa2062e16e5ad6a17",
+      "bytes": 1094
+    },
+    {
+      "path": "front_door_ai/run.sh",
+      "sha256": "d8177f6b1f27de7c97b296ad936f1e43d4bd4caa817a5d51cebec5c469786ef5",
+      "bytes": 87
+    },
+    {
+      "path": "examples/ha_automations.yaml",
+      "sha256": "96fc2597d3a3f0c67606b7bdcc6d69656fe5f3cd4230ced326d86d637e0b474c",
+      "bytes": 2058
+    },
+    {
+      "path": "docs/PROTOCOL.md",
+      "sha256": "27e8ccb39796060f8e9ef647c7a4e073964f1c68073828445be5eeaf6cb443c6",
+      "bytes": 5689
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "f1909bd741bd3f40eb3ab764f03396017463043db8016f53e5a9944fbffd11b0",
+      "bytes": 4196
+    }
+  ]
+}

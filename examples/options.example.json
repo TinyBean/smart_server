@@ -1,0 +1,19 @@
+{
+  "camera_url": "http://192.168.1.50/stream",
+  "mqtt_host": "127.0.0.1",
+  "mqtt_port": 18884,
+  "mqtt_username": "",
+  "mqtt_password": "",
+  "mqtt_tls": false,
+  "mqtt_prefix": "home/frontdoor",
+  "device_id": "frontdoor",
+  "public_base_url": "http://192.168.1.10:8080",
+  "todo_entity": "todo.departure_reminders",
+  "tts_provider": "qwen",
+  "qwen_api_key": "",
+  "qwen_tts_url": "wss://cn-beijing.maas.qianwenaiapi.com/api-ws/v1/inference",
+  "qwen_tts_model": "qwen-audio-3.1-tts-flash",
+  "qwen_tts_voice": "longjielidou_v3.1",
+  "piper_model": "models/piper/voice.onnx",
+  "detector_model": "models/person-detection-retail-0013.xml"
+}

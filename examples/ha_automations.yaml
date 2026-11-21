@@ -1,0 +1,52 @@
+# This is an automation LIST, suitable for automations.yaml.
+# In the UI YAML editor paste ONE list item without its leading '-'.
+- id: front_door_ai_activity
+  alias: Front Door AI - 进出播放
+  mode: queued
+  max: 10
+  triggers:
+    - trigger: mqtt
+      topic: home/frontdoor/vision/event
+  conditions:
+    - condition: template
+      value_template: >-
+        {{ trigger.payload_json is defined
+           and trigger.payload_json.event_type in ['enter', 'exit']
+           and trigger.payload_json.event_id is defined
+           and 0 <= as_timestamp(now()) - as_timestamp(trigger.payload_json.timestamp, 0) <= 10 }}
+  actions:
+    - choose:
+        - conditions: "{{ trigger.payload_json.event_type == 'enter' }}"
+          sequence:
+            - action: mqtt.publish
+              data:
+                topic: home/frontdoor/reminder/command
+                qos: 1
+                retain: false
+                payload: >-
+                  {{ {'command': 'play_arrival', 'event_id': trigger.payload_json.event_id} | to_json }}
+        - conditions: "{{ trigger.payload_json.event_type == 'exit' }}"
+          sequence:
+            - action: mqtt.publish
+              data:
+                topic: home/frontdoor/reminder/command
+                qos: 1
+                retain: false
+                payload: >-
+                  {{ {'command': 'play_departure', 'event_id': trigger.payload_json.event_id} | to_json }}
+
+# The backend already polls full todo items every 10 seconds and subscribes to HA state changes.
+# Optional immediate sync when the to-do entity changes:
+- id: front_door_ai_reminder_sync
+  alias: Front Door AI - 主动同步待办
+  mode: restart
+  triggers:
+    - trigger: state
+      entity_id: todo.departure_reminders
+  actions:
+    - action: mqtt.publish
+      data:
+        topic: home/frontdoor/reminder/command
+        qos: 1
+        retain: false
+        payload: '{"command":"sync"}'

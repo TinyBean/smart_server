@@ -1,0 +1,37 @@
+name: Validate Front Door AI
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front_door_ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.10"
+      - run: uv sync --frozen --all-extras --group dev --python 3.12
+      - run: uv run python scripts/export_runtime_requirements.py --check
+      - run: uv run ruff check app tests scripts
+      - run: uv run python scripts/download_model.py models
+      - run: docker compose -f tests/compose.yaml -p frontdoor-ci up -d --wait
+      - run: uv run pytest -q
+        env:
+          FRONTDOOR_MQTT_HOST: 127.0.0.1
+          FRONTDOOR_MQTT_PORT: "18884"
+          FRONTDOOR_TEST_MODEL: models/person-detection-retail-0013.xml
+      - name: Verify dependency and model cache across releases and code edits
+        run: uv run python scripts/check_build_cache.py --image front-door-ai:test
+      - name: Smoke-test container and offline startup
+        run: |
+          docker run -d --name frontdoor-smoke --network none front-door-ai:test
+          sleep 20
+          docker exec frontdoor-smoke .venv/bin/python -c "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8080/healthz').status == 200"
+          docker exec frontdoor-smoke .venv/bin/python -c "from app.vision import OpenVINODetector; OpenVINODetector('/models/person-detection-retail-0013.xml')"
+      - if: always()
+        run: |
+          docker rm -f frontdoor-smoke || true
+          docker compose -f tests/compose.yaml -p frontdoor-ci down

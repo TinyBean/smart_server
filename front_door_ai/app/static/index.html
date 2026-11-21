@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="__BASE__"><title>Front Door AI</title>
+  <link rel="stylesheet" href="static/style.css?v=1.1.9">
+  <script src="static/preview.js?v=1.1.9" defer></script>
+  <script src="static/app.js?v=1.1.9" defer></script>
+</head>
+<body>
+<aside>
+  <div class="brand"><span class="brand-mark">↗</span><div>FRONT DOOR<span>LOCAL INTELLIGENCE / V1.1</span></div></div>
+  <nav aria-label="主导航">
+    <button class="selected" data-tab="overview">◉ <span>运行概览</span></button>
+    <button data-tab="camera">▧ <span>摄像头与区域</span></button>
+    <button data-tab="events">↗ <span>进出事件</span></button>
+    <button data-tab="announcements">♫ <span>进出门播报</span></button>
+    <button data-tab="settings">⌘ <span>检测设置</span></button>
+    <button data-tab="logs">›_ <span>运行日志</span></button>
+  </nav>
+  <div class="sidebar-note"><i></i> LOCAL VISION<br><small>摄像头画面与人体检测在本地处理</small></div>
+</aside>
+<main>
+  <header><div><div class="eyebrow">HOME ASSISTANT / FRONT DOOR</div><h1 id="page-title">运行概览</h1></div><div class="status-pill" id="overall">正在连接</div></header>
+  <div id="notice" role="status" hidden></div>
+  <section id="overview" class="tab active">
+    <div class="metrics"><article><label>视频输入</label><strong id="input-fps">—</strong><span>FPS / 最新帧优先</span></article><article><label>人体检测</label><strong id="detect-fps">—</strong><span>FPS / CPU 推理</span></article><article><label>推理耗时</label><strong id="inference">—</strong><span>ms / 单次处理</span></article><article><label>当前人数</label><strong id="persons">—</strong><span>TRACKED PERSONS</span></article></div>
+    <div class="overview-grid"><article class="panel"><div class="panel-head"><h2>门口画面</h2><span class="tag">LOCAL CAMERA</span></div><div class="preview"><img id="overview-image" alt="摄像头最新画面"><div class="empty-camera">正在连接摄像头画面<span>连接成功后自动显示</span></div></div><div class="panel-foot"><span id="frame-age">暂无新画面</span><button data-jump="camera" class="text-button">标定检测区域 ↗</button></div></article><article class="panel"><h2>链路状态</h2><div class="connections" id="connections"></div><div class="separator"></div><h2>最近事件</h2><div id="last-event" class="empty">尚无进出事件</div><div class="hint">事件由 AI 产生；播放与家庭联动由 Home Assistant 发起。</div></article></div>
+  </section>
+  <section id="camera" class="tab">
+    <div class="panel">
+      <div class="panel-head"><h2>区域与出门路线标定</h2><span id="calibration-status" class="tag">尚未标定</span></div>
+      <p class="description">出门支持三区域和「摄像头旁 → 门口」方向路线。选择出门路线后，先点起点再点终点，保存即可启用。进门可使用门体观察区和门后人员出现区。<span id="tracking-point-hint"></span></p>
+      <div class="calibration-grid"><div class="canvas-wrap"><img id="camera-image" alt="用于标定的实时画面"><canvas id="zone-canvas" width="640" height="480" aria-label="点击画面绘制区域或出门路线"></canvas></div>
+        <div class="zone-tools"><label for="zone-select">正在绘制</label><select id="zone-select"><option value="outside_zone">室外 OUTSIDE</option><option value="transition_zone">过渡 TRANSITION</option><option value="inside_zone">室内 INSIDE</option><option value="door_zone">门体观察区 DOOR</option><option value="arrival_zone">门后人员出现区 ARRIVAL</option><option value="departure_path">出门路线 CAMERA → DOOR</option></select>
+          <p id="zone-draw-hint" class="hint">点击画面添加区域顶点，至少三个点后保存。</p><button id="zone-undo">撤销顶点</button><button id="zone-clear">清除当前区域或路线</button><button id="zones-save" class="primary">保存区域与路线</button><label class="check"><input id="show-tracks" type="checkbox" checked> 显示人体框与轨迹</label>
+          <p class="hint">三区域内部不能重叠；出门路线可跨越区域或位于区域外，默认停用。半身画面请先选择人体框中心，再按实际判定点绘制路线。清除路线并保存即可停用。</p>
+        </div>
+      </div>
+    </div>
+<div class="panel calibration-panel"><h2>开门与人员出现标定</h2><p class="description">先保存门体观察区和人员出现区，再分别在门关闭、打开时采集。采集时请让开门体观察区；可在几个打开角度重复采集开门参考。重新采集关门参考会清除旧开门参考。</p><div id="door-state" class="connections"></div><div class="actions"><button id="capture-closed">采集关门参考</button><button id="capture-open">采集开门参考</button><button data-jump="settings">切换进门规则 ↗</button></div><p id="arrival-rule" class="hint"></p><p id="door-error" class="error-text"></p></div>
+  </section>
+  <section id="announcements" class="tab">
+    <p class="description">分别编辑进门和出门时播放的内容。保存后自动准备语音；两种播报使用相同的语音服务与音色。</p>
+    <div class="speech-grid">
+      <article class="panel speech-panel" aria-labelledby="arrival-heading">
+        <div class="panel-head"><h2 id="arrival-heading">进门欢迎语</h2><span class="tag">ENTER</span></div>
+        <p class="description">识别到进门时播放，触发方式遵循检测设置。</p>
+        <form id="arrival-form">
+          <label class="check"><input id="arrival-enabled" type="checkbox">启用进门播报</label>
+          <label class="speech-label" for="arrival-text">欢迎语</label>
+          <textarea id="arrival-text" rows="5" maxlength="1500" required placeholder="欢迎回家。"></textarea>
+          <div class="actions"><button id="save-arrival" class="primary" type="submit" disabled>保存欢迎语</button><span id="arrival-unsaved" class="edit-status" hidden>有未保存的修改</span></div>
+        </form>
+        <div class="speech-audio"><h3>音频准备与试听</h3>
+          <div id="arrival-audio-state" class="connections"></div>
+          <audio id="arrival-preview" aria-label="进门欢迎语试听" controls preload="none" hidden></audio>
+          <div class="actions"><button id="regenerate-arrival">重新生成</button><button id="simulate-arrival">模拟进门</button></div>
+          <p class="hint">模拟进门会通过 HA 自动化在设备上播放。缓存未就绪时使用内置欢迎音。进门播报不会读取或完成待办。</p>
+          <div id="arrival-error" class="error-text" role="status"></div>
+        </div>
+      </article>
+      <article class="panel speech-panel" aria-labelledby="departure-heading">
+        <div class="panel-head"><h2 id="departure-heading">出门提醒</h2><span class="tag">EXIT</span></div>
+        <p class="description">识别到出门时播放，没有待办也会播放保存的文字。</p>
+        <form id="departure-form">
+          <label class="check"><input id="departure-enabled" type="checkbox">启用出门播报</label>
+          <label class="speech-label" for="departure-text">提醒语</label>
+          <textarea id="departure-text" rows="5" maxlength="1500" required placeholder="出门别忘了带手机和钥匙。"></textarea>
+          <label class="check todo-option"><input id="departure-include-todos" type="checkbox">附带 Home Assistant 待办事项</label>
+          <div class="actions"><button id="save-departure" class="primary" type="submit" disabled>保存提醒语</button><span id="departure-unsaved" class="edit-status" hidden>有未保存的修改</span></div>
+        </form>
+        <div class="speech-audio"><h3>音频准备与试听</h3>
+          <div id="audio-state" class="connections"></div>
+          <audio id="audio-preview" aria-label="出门提醒试听" controls preload="none" hidden></audio>
+          <div class="actions"><button id="regenerate">重新生成</button><button id="simulate-departure">模拟出门</button></div>
+          <p class="hint">模拟出门会通过 HA 自动化在设备上播放。缓存未就绪时使用内置告别音；浏览器试听不会完成待办。</p>
+          <div id="reminder-error" class="error-text" role="status"></div>
+        </div>
+        <details id="departure-todos" class="speech-details" hidden>
+          <summary>附带待办 <span id="reminder-count" class="tag">0 项</span></summary>
+          <p class="hint">在 Home Assistant 待办列表中添加和修改。设备完整播放成功后，才将本次播报的待办标记完成。</p>
+          <ul id="todo-list" class="todo-list"></ul>
+          <button id="sync-reminders">立即同步待办</button>
+          <h3>完整播报内容</h3><blockquote id="tts-text"></blockquote>
+        </details>
+      </article>
+    </div>
+  </section>
+  <section id="events" class="tab"><div class="panel"><div class="panel-head"><h2>进出记录</h2><button id="refresh-events">刷新</button></div><p class="description">保存事件发生时的原始画面与检测标注。</p><div id="event-list" class="event-grid"></div></div></section>
+  <section id="settings" class="tab"><div class="panel narrow"><h2>检测参数</h2><p class="description">保存后立即生效。摄像头、MQTT 和音色路径请在 add-on 配置中修改并重启。</p><form id="settings-form"><div class="form-grid">
+    <label>进门判定<select name="entry_detection_mode"><option value="zone_crossing">原三区域迁移</option><option value="door_reveal">开门后人员出现（需完成标定）</option></select></label>
+    <label>区域判定点<select name="tracking_point"><option value="bottom_center">人体框底边中心（全身画面）</option><option value="center">人体框中心（半身画面）</option></select></label>
+    <label>检测帧率 FPS<input name="detection_fps" type="number" min="1" max="15" step="0.5" required></label>
+    <label>轨迹激活置信度<input name="confidence_threshold" type="number" min="0.1" max="1" step="0.05" required></label>
+    <label>最短轨迹年龄（秒）<input name="minimum_track_age" type="number" min="0" max="10" step="0.1" required></label>
+    <label>最小位移（对角线比例）<input name="minimum_movement" type="number" min="0" max="1" step="0.01" required></label>
+    <label>出门路线容差（对角线比例）<input name="departure_path_tolerance" type="number" min="0.01" max="0.25" step="0.01" required></label>
+    <label>单轨迹冷却（秒）<input name="event_cooldown" type="number" min="0" max="60" step="0.5" required></label>
+    <label>截图保留天数<input name="snapshot_retention_days" type="number" min="1" max="7" step="1" required></label>
+    <label>最多保留事件<input name="snapshot_max_events" type="number" min="1" max="500" step="1" required></label>
+    </div><button class="primary" type="submit">保存检测参数</button></form></div></section>
+  <section id="logs" class="tab"><div class="panel"><div class="panel-head"><h2>近期日志</h2><span class="tag">最多 300 条</span></div><pre id="log-lines" class="logs">正在读取…</pre></div></section>
+  <footer><span>FRONT DOOR AI</span><span>本地感知 · 可靠提醒</span></footer>
+</main>
+</body></html>

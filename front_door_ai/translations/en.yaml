@@ -1,0 +1,39 @@
+configuration:
+  camera_url:
+    name: Camera MJPEG URL
+  mqtt_host:
+    name: MQTT broker host
+  mqtt_port:
+    name: MQTT port
+  mqtt_username:
+    name: MQTT username
+  mqtt_password:
+    name: MQTT password
+  mqtt_tls:
+    name: MQTT TLS
+  mqtt_prefix:
+    name: MQTT topic prefix
+  device_id:
+    name: Device ID
+  public_base_url:
+    name: LAN media base URL
+  todo_entity:
+    name: Departure to-do entity
+  tts_provider:
+    name: Speech synthesis provider
+  qwen_api_key:
+    name: Qwen API key
+    description: Use a key for the selected endpoint. Save and restart the app.
+  qwen_tts_url:
+    name: Qwen speech WebSocket endpoint
+  qwen_tts_model:
+    name: Qwen speech model
+  qwen_tts_voice:
+    name: Qwen voice
+    description: Long Jielidou uses longjielidou_v3.1 with qwen-audio-3.1-tts-flash.
+  piper_model:
+    name: Local Piper voice model
+  detector_model:
+    name: OpenVINO detector model
+network:
+  8080/tcp: LAN video and audio downloads
